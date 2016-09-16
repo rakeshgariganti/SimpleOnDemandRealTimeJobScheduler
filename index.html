@@ -1,0 +1,42 @@
+<html>
+<head>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+<script>
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+socket.on("output", function(data){
+    document.getElementById('console').innerHTML += data.output+"<br>";
+
+});
+socket.on("started", function(){
+    document.getElementById('console').innerHTML += "Script has been Invoked.<br><br>";
+});
+
+socket.on("terminated", function(){
+    document.getElementById('console').innerHTML += "<br>Script has been terminated.<br>";
+});
+
+function invoke(script_index){
+        document.getElementById('console').innerHTML = "";
+        socket.emit('invoked', {'script_index': script_index});
+}
+
+</script>
+
+    </head>
+<body>
+<b>Scripts:</b>
+<br>
+{% for script in scripts %}
+    <ul>
+        <li>
+            {{ script }} <button onclick="invoke({{ loop.index - 1 }})">run</button>
+        </li>
+    </ul>
+{% endfor %}
+
+<b>Output:</b>
+<div id="console"></div>
+
+</body>
+</html>
